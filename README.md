@@ -12,7 +12,7 @@ This project consists of two parts: a native **Android Application** to log cell
 ### 📱 Android Application
 | Main Interface | Real-time Logging |
 |:---:|:---:|
-| <img src="app_ui_1.jpg" width="250" alt="App Screen 1"> | <img src="app_ui_2.jpg" width="250" alt="App Screen 2"> |
+| <img src="app_ui_1.jpeg" width="250" alt="App Screen 1"> | <img src="app_ui_2.jpeg" width="250" alt="App Screen 2"> |
 | *Status Dashboard* | *Active Data Collection* |
 
 ### 🗺️ Coverage Heatmap
