@@ -16,7 +16,7 @@ This project was originally developed to map the network topology of **Blagoevgr
 ## 📸 Project Visuals
 
 ### 📱 Android Application
-| Main Interface | Real-time Logging |
+| Real-time Logging | Main Interface |
 |:---:|:---:|
 | <img src="app_ui_1.jpeg" width="250" alt="App Status Screen"> | <img src="app_ui_2.jpeg" width="250" alt="Data Collection Screen"> |
 | *Status Dashboard* | *Active Data Collection* |
