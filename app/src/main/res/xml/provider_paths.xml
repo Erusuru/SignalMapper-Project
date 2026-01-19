@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- Allows sharing from App Data (Old way) -->
+
+    <external-files-path name="my_logs" path="." />
+    <!-- Allows sharing from Public Storage (New way for Documents) -->
+    <external-path name="external_files" path="." />
+</paths>

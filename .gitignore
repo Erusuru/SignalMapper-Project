@@ -1,0 +1,15 @@
+# --- Android Ignores ---
+.gradle/
+build/
+app/build/
+local.properties
+.idea/
+*.iml
+.DS_Store
+
+# --- Python Ignores ---
+__pycache__/
+*.pyc
+*.csv
+exported_results/
+venv/
