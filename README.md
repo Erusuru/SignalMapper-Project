@@ -101,7 +101,7 @@ If you want to use the tool immediately without Android Studio:
 ---
 
 ## 🔬 Research Findings (Sample)
-*Based on 200,000+ data points collected in Blagoevgrad:*
+*Based on 300,000+ data points collected in Blagoevgrad:*
 
 *   **Operator 01F:** "Performance King" - Highest peak speeds and aggressive tower switching (60 switches/min).
 *   **Operator 05F:** "Consistency King" - Fewest dead zones and balanced handover logic.
