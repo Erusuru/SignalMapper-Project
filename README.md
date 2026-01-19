@@ -110,3 +110,4 @@ If you want to use the tool immediately without Android Studio:
 
 ---
 *Created for the South-West University "Neofit Rilski" Engineering Department.*
+![Visitor Count](https://visitor-badge.laobi.icu/badge?page_id=YourUsername.YourRepoName)
