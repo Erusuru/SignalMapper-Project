@@ -1,29 +1,56 @@
 # Cellular Signal Mapper & Analysis Suite
-# Ramazan Ertugrul Aydogan
+### by Ramazan Ertugrul Aydogan
+
 ![Platform](https://img.shields.io/badge/Platform-Android-green)
 ![Analysis](https://img.shields.io/badge/Analysis-Python-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
 
 This project consists of two parts: a native **Android Application** to log cellular telemetry (RSRP, SNR, PCI) and a **Python Analysis Suite** to process that data into engineering reports and coverage heatmaps.
 
+## 📸 Project Visuals
+| Real-time Logging App | Coverage Heatmap Analysis |
+|:---:|:---:|
+| <img src="app_preview.png" width="250" alt="Upload app_preview.png to see image"> | <img src="heatmap_preview.png" width="400" alt="Upload heatmap_preview.png to see image"> |
+| *Native Android UI (Kotlin)* | *Generated Signal Heatmap* |
+
 ## 📱 1. Android Application
-Located in the root directory.
+Located in the root directory (`/app`).
 *   **Language:** Kotlin
 *   **Key Features:**
-    *   Dual-SIM support (SubscriptionManager API).
-    *   Foreground Service with `WakeLock` for continuous 1Hz logging.
-    *   High-Accuracy GPS (FusedLocationProvider).
+    *   **Dual-SIM Support:** Logs A1/Yettel/Vivacom simultaneously using `SubscriptionManager` API.
+    *   **Background Service:** Uses `ForegroundService` with `WakeLock` for continuous 1Hz logging (screen off support).
+    *   **High-Accuracy GPS:** Forces `FusedLocationProvider` into high-priority mode for vehicular speed tracking.
 
 ## 📊 2. Analysis Scripts
 Located in `/analysis_scripts`.
-*   **network_analyzer.py:** Generates engineering reports (Signal quality, Pollution analysis, Handover logic).
-*   **device_comparison.py:** Compares hardware sensitivity between two devices (e.g., S25 Ultra vs A52s).
-*   **ocr_processor.py:** Extracts signal data from screenshots (if manual logging is required).
+
+### 🧠 Core Analysis
+*   **`network_analyzer.py`**: The main engine. Parses CSV logs, filters stationary data, detects spectrum pollution, and calculates "Ping-Pong" handover rates.
+*   **`device_comparison.py`**: A hardware benchmarking tool. Matches GPS points between two devices (e.g., S25 Ultra vs A52s) to determine antenna sensitivity differences.
+
+### 🗺️ Mapping & Visualization
+*   **`map_visualizer.py`**: Automates high-resolution map rendering using Playwright (browser automation) to capture 4K screenshots of Kepler.gl heatmaps.
+*   **`geo_resolver.py`**: Converts raw Google Maps URLs and dropped pins into clean Latitude/Longitude coordinates for the dataset.
+
+### 📷 Legacy Support
+*   **`ocr_processor.py`**: Uses Tesseract OCR to extract signal data from ServiceMode screenshots (used when API access is restricted).
 
 ## 🚀 How to Run
-1.  **Android:** Open the root folder in Android Studio and build the APK.
-2.  **Python:** Install dependencies:
+
+### Part A: The Android App
+1.  Open the root folder in **Android Studio**.
+2.  Build the APK and install it on a device.
+3.  Grant Location and Phone State permissions.
+
+### Part B: The Analysis
+1.  Install Python dependencies:
     ```bash
-    pip install pandas numpy matplotlib pytesseract requests
+    pip install pandas numpy matplotlib pytesseract requests playwright
+    playwright install
+    ```
+2.  Run the analyzer on your logs:
+    ```bash
+    python analysis_scripts/network_analyzer.py
     ```
 
 ---
