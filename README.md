@@ -8,10 +8,16 @@
 This project consists of two parts: a native **Android Application** to log cellular telemetry (RSRP, SNR, PCI) and a **Python Analysis Suite** to process that data into engineering reports and coverage heatmaps.
 
 ## 📸 Project Visuals
-| Real-time Logging App | Coverage Heatmap Analysis |
+
+### 📱 Android Application
+| Main Interface | Real-time Logging |
 |:---:|:---:|
-| <img src="app_preview.png" width="250" alt="Upload app_preview.png to see image"> | <img src="heatmap_preview.png" width="400" alt="Upload heatmap_preview.png to see image"> |
-| *Native Android UI (Kotlin)* | *Generated Signal Heatmap* |
+| <img src="app_ui_1.jpg" width="250" alt="App Screen 1"> | <img src="app_ui_2.jpg" width="250" alt="App Screen 2"> |
+| *Status Dashboard* | *Active Data Collection* |
+
+### 🗺️ Coverage Heatmap
+<img src="heatmap_preview.png" width="100%" alt="Coverage Heatmap">
+*Generated Signal Heatmap (RSRP/SNR) visualized in Kepler.gl*
 
 ## 📱 1. Android Application
 Located in the root directory (`/app`).
