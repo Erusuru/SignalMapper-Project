@@ -7,7 +7,9 @@
 
 A comprehensive toolkit for auditing cellular network coverage (4G/LTE/5G), benchmarking hardware performance, and generating high-fidelity signal heatmaps.
 
-This project was originally developed to map the network topology of **Blagoevgrad, Bulgaria**, comparing national carriers (A1, Yettel, Vivacom). However, the **software is universal** and works with any carrier globally.
+This project was originally developed to map the network topology of **Blagoevgrad, Bulgaria**, comparing three major national carriers. However, the **software is universal** and works with any carrier globally.
+
+> **⚖️ Disclaimer:** To maintain neutrality and avoid potential commercial conflicts, the specific names of the telecom operators analyzed in this study have been anonymized (referred to as **Operator 01F, 03F, and 05F**).
 
 ---
 
@@ -39,7 +41,7 @@ Python scripts to turn raw CSV logs into engineering insights.
 
 #### 🧠 `network_analyzer.py` (The Core Engine)
 Processes the CSV logs to generate a full network audit.
-*   **Smart Carrier Merging:** Automatically handles dynamic carrier name changes. Operators often change their SPN (Service Provider Name) for promotions (e.g., changing **"A1 BG"** to **"30YearsA1"**, or **"Yettel"** to **"Yettel 5G Power"**). The script intelligently groups these variations to prevent data fragmentation.
+*   **Smart Carrier Merging:** Automatically handles dynamic carrier name changes. Operators often change their SPN (Service Provider Name) for promotions. The script intelligently groups these variations to prevent data fragmentation.
 *   **Stationary Filtering:** Automatically removes data points where the user is sitting still to prevent data skewing.
 *   **Spectrum Pollution Detection:** Identifies areas with strong signal (High RSRP) but unusable quality (Low SNR).
 *   **Handover Analysis:** Calculates how often the phone switches towers ("Ping-Pong effect").
@@ -100,9 +102,10 @@ If you want to use the tool immediately without Android Studio:
 
 ## 🔬 Research Findings (Sample)
 *Based on 200,000+ data points collected in Blagoevgrad:*
-*   **A1 BG:** "Performance King" - Highest peak speeds and aggressive tower switching (60 switches/min).
-*   **Yettel:** "Consistency King" - Fewest dead zones and balanced handover logic.
-*   **Vivacom:** "Conservative" - Sticky connections; holds onto distant towers too long, causing high spectrum pollution.
+
+*   **Operator 01F:** "Performance King" - Highest peak speeds and aggressive tower switching (60 switches/min).
+*   **Operator 05F:** "Consistency King" - Fewest dead zones and balanced handover logic.
+*   **Operator 03F:** "Conservative" - Sticky connections; holds onto distant towers too long, causing high spectrum pollution.
 *   **Hardware Insight:** The mid-range **Samsung A52s** (plastic back) often outperformed the flagship **S25 Ultra** (metal/glass) in raw signal reception by ~1.2 dBm due to RF transparency.
 
 ---
