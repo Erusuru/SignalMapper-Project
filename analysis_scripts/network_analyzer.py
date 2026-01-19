@@ -19,8 +19,13 @@ STATIONARY_SPEED_THRESHOLD = -1
 MOBILITY_THRESHOLD = 2.5 
 
 # 🧹 CLEANING THRESHOLDS
+# 1. Minimum absolute samples to be considered real data
 MIN_SAMPLES_FOR_REPORT = 50 
-DEAD_ZONE_THRESHOLD = -130 
+# 2. If a Tech (e.g. 3G) has less than X% samples compared to the main Tech (4G/5G), ignore it.
+#    (e.g., if 4G has 10,000 points, ignore 3G if it has < 500 points)
+SIGNIFICANT_TECH_RATIO = 0.05 
+# 3. If average signal is worse than this, assume it's "Ghost" data
+DEAD_ZONE_THRESHOLD = -135
 
 EXPORT_DIR = "exported_results"
 CHARTS_DIR = os.path.join(EXPORT_DIR, "charts")
@@ -170,51 +175,40 @@ def calculate_true_duration(df_op):
     return valid_duration / 60.0 
 
 # ==========================================
-# 5. CHARTING ENGINE (INTEGRATED)
+# 5. CHARTING ENGINE
 # ==========================================
 def generate_internal_charts(df_clean):
-    """ Generates PNG charts from the dataframe currently in memory """
     if df_clean.empty: return
 
     print("📊 Generating Visual Charts...")
     os.makedirs(CHARTS_DIR, exist_ok=True)
     
-    # Create Label (e.g. A1 (4G))
     df_chart = df_clean.copy()
     df_chart['label'] = df_chart['operator'] + " (" + df_chart['tech'] + ")"
     
-    # Use Agg backend to work on servers without display
     plt.switch_backend('Agg')
     plt.style.use('ggplot')
 
-    # --- CHART 1: Average Signal Strength (Bar) ---
+    # Chart 1: RSRP
     plt.figure(figsize=(12, 7))
     avg_rsrp = df_chart.groupby('label')['rsrp'].mean().sort_values(ascending=False)
     
     colors = []
     for x in avg_rsrp.values:
-        if x > -90: colors.append('#2ecc71') # Green
-        elif x > -100: colors.append('#f1c40f') # Yellow
-        elif x > -110: colors.append('#e67e22') # Orange
-        else: colors.append('#e74c3c') # Red
+        if x > -90: colors.append('#2ecc71') 
+        elif x > -100: colors.append('#f1c40f') 
+        elif x > -110: colors.append('#e67e22') 
+        else: colors.append('#e74c3c') 
 
     ax = avg_rsrp.plot(kind='bar', color=colors, width=0.7)
     plt.title('Average Signal Strength (RSRP)', fontsize=16)
     plt.ylabel('RSRP (dBm)', fontsize=12)
-    plt.xlabel('Operator (Tech)', fontsize=12)
     plt.xticks(rotation=45, ha='right')
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-    
-    # Add labels
-    for i, v in enumerate(avg_rsrp):
-        ax.text(i, v + 1, f"{v:.1f}", ha='center', fontweight='bold')
-
     plt.tight_layout()
     plt.savefig(os.path.join(CHARTS_DIR, "benchmark_signal_strength.png"), dpi=300)
-    print("  ✅ Saved: charts/benchmark_signal_strength.png")
     plt.close()
 
-    # --- CHART 2: Quality Distribution (Stacked) ---
+    # Chart 2: Quality
     def classify(r):
         if r >= -85: return 'Excellent'
         if r >= -100: return 'Good'
@@ -225,6 +219,7 @@ def generate_internal_charts(df_clean):
     dist = df_chart.groupby(['label', 'category']).size().unstack(fill_value=0)
     dist_pct = dist.div(dist.sum(axis=1), axis=0) * 100
     
+    # Ensure correct column order
     col_order = ['Excellent', 'Good', 'Fair', 'Poor']
     existing_cols = [c for c in col_order if c in dist_pct.columns]
     dist_pct = dist_pct[existing_cols]
@@ -234,17 +229,10 @@ def generate_internal_charts(df_clean):
 
     ax2 = dist_pct.plot(kind='bar', stacked=True, figsize=(12, 7), color=stack_colors)
     plt.title('Signal Quality Distribution (%)', fontsize=16)
-    plt.ylabel('Percentage', fontsize=12)
-    plt.xlabel('Operator', fontsize=12)
     plt.xticks(rotation=45, ha='right')
     plt.legend(bbox_to_anchor=(1.0, 1.05))
-    
-    for c in ax2.containers:
-        ax2.bar_label(c, fmt='%.0f%%', label_type='center', color='white', fontsize=9, fontweight='bold')
-
     plt.tight_layout()
     plt.savefig(os.path.join(CHARTS_DIR, "benchmark_quality_dist.png"), dpi=300)
-    print("  ✅ Saved: charts/benchmark_quality_dist.png")
     plt.close()
 
 # ==========================================
@@ -257,7 +245,7 @@ def analyze_data(df):
     def log(text=""):
         print(text)
         report_buffer.append(str(text))
-        
+    
     def log_df(dataframe):
         s = dataframe.to_string()
         print(s)
@@ -268,21 +256,42 @@ def analyze_data(df):
     pd.options.display.float_format = '{:.1f}'.format
 
     df_new = df.copy()
-
-    # --- 1. CALCULATE GRID FIRST ---
     df_new['grid_id'] = list(zip(df_new['lat'].round(GEO_PRECISION), df_new['lon'].round(GEO_PRECISION)))
 
-    # --- 2. FILTER OUT "GHOST" / DEAD TECHNOLOGIES ---
-    counts = df_new.groupby(['operator', 'tech']).size()
-    valid_counts = counts[counts > MIN_SAMPLES_FOR_REPORT].index
-    means = df_new.groupby(['operator', 'tech'])['rsrp'].mean()
-    valid_means = means[means > DEAD_ZONE_THRESHOLD].index 
-    valid_groups = valid_counts.intersection(valid_means)
+    # --- INTELLIGENT FILTERING FOR REPORT ---
+    # 1. Count samples per Operator + Tech
+    counts = df_new.groupby(['operator', 'tech']).size().reset_index(name='count')
     
-    # Filter the DataFrame used for Report AND Charts
-    df_clean_report = df_new.set_index(['operator', 'tech']).loc[valid_groups].reset_index()
+    # 2. Determine "Dominant" tech count for each operator (usually 4G or 5G)
+    max_counts = counts.groupby('operator')['count'].transform('max')
+    
+    # 3. Filter: Keep row ONLY if count > 5% of dominant tech AND count > MIN_SAMPLES
+    #    AND Average Signal > DEAD_ZONE_THRESHOLD
+    means = df_new.groupby(['operator', 'tech'])['rsrp'].mean().reset_index(name='avg_signal')
+    
+    # Merge stats
+    stats_df = pd.merge(counts, means, on=['operator', 'tech'])
+    stats_df['max_count'] = stats_df.groupby('operator')['count'].transform('max')
+    
+    # Logic: Keep if (Count > 5% of Max) OR (Count > 5000 independent of ratio)
+    # Also strictly remove if signal is garbage (-135)
+    valid_rows = stats_df[
+        ((stats_df['count'] > stats_df['max_count'] * SIGNIFICANT_TECH_RATIO) | (stats_df['count'] > 5000)) & 
+        (stats_df['count'] > MIN_SAMPLES_FOR_REPORT) &
+        (stats_df['avg_signal'] > DEAD_ZONE_THRESHOLD)
+    ]
+    
+    # Create list of valid (Operator, Tech) tuples
+    valid_pairs = set(zip(valid_rows['operator'], valid_rows['tech']))
+    
+    # Filter the Main Dataframe used for Report & Charts
+    df_clean_report = df_new[df_new.apply(lambda x: (x['operator'], x['tech']) in valid_pairs, axis=1)].copy()
 
-    # --- GENERATE CHARTS NOW (Using the filtered data) ---
+    if df_clean_report.empty:
+        log("⚠️ No valid data remained after filtering.")
+        return 0, 0
+
+    # Generate charts using only valid/significant data
     generate_internal_charts(df_clean_report)
 
     log("\n" + "="*50)
@@ -315,6 +324,7 @@ def analyze_data(df):
             zero_count = (op_df['snr'] == 0.0).sum()
             zero_ratio = zero_count / len(op_df)
             
+            # --- SNR CHECK ---
             if missing_ratio > 0.5 or zero_ratio > 0.5:
                 log(f"  - {op}: ⚠️ SNR Unsupported (Sensor Missing/Incompatible)")
             else:
@@ -380,7 +390,7 @@ def analyze_data(df):
     report_path = os.path.join(EXPORT_DIR, 'network_comparison_report.txt')
     with open(report_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(report_buffer))
-    print(f"\n📄 Report saved to: {report_path}")
+    print(f"📄 Report saved to: {report_path}")
     
     return total_dist_stats.sum(), unique_counts.sum() * 0.011
 
@@ -400,6 +410,19 @@ def spatial_averaging(df):
     
     return df_agg
 
+def spatial_averaging_combined(df):
+    """ Creates ONE map file per operator (merging all techs) """
+    if df.empty: return pd.DataFrame()
+    df['grid_lat'] = df['lat'].round(GEO_PRECISION)
+    df['grid_lon'] = df['lon'].round(GEO_PRECISION)
+    
+    df_agg = df.groupby(['grid_lat', 'grid_lon', 'operator']).agg({
+        'rsrp': 'mean', 'snr': 'mean', 'rsrq': 'mean',
+        'lat': 'mean', 'lon': 'mean',
+        'pci': lambda x: x.mode()[0] if not x.mode().empty else np.nan
+    }).reset_index()
+    return df_agg
+
 # ==========================================
 # 7. EXECUTION
 # ==========================================
@@ -416,7 +439,7 @@ if __name__ == "__main__":
             print("❌ All data was stationary!")
             exit()
             
-        # 2. Analyze (Now includes Chart Generation!)
+        # 2. Analyze
         try:
             total_km_travelled, total_unique_km = analyze_data(df_clean)
         except Exception as e:
@@ -426,40 +449,44 @@ if __name__ == "__main__":
             total_km_travelled = 0
             total_unique_km = 0
         
-        # 3. Export Maps (SPLIT BY TECH)
-        df_map = spatial_averaging(df_clean)
-        print(f"\n💾 EXPORTING CSV MAPS TO '{EXPORT_DIR}/' ...")
-        
-        unique_combinations = df_map[['operator', 'tech']].drop_duplicates()
+        # 3. EXPORT SPLIT MAPS (4G, 5G...)
+        print(f"\n💾 EXPORTING SPLIT MAPS TO '{EXPORT_DIR}/' ...")
+        df_map_split = spatial_averaging(df_clean)
+        unique_combinations = df_map_split[['operator', 'tech']].drop_duplicates()
         
         for index, row in unique_combinations.iterrows():
             op_name = row['operator']
             tech_name = row['tech']
             
-            df_op_tech = df_map[(df_map['operator'] == op_name) & (df_map['tech'] == tech_name)]
-            avg_signal = df_op_tech['rsrp'].mean()
+            df_op_tech = df_map_split[(df_map_split['operator'] == op_name) & (df_map_split['tech'] == tech_name)]
             
-            if len(df_op_tech) > MIN_SAMPLES_FOR_REPORT and avg_signal > DEAD_ZONE_THRESHOLD:
+            # Simple export logic: Just don't export if empty
+            if len(df_op_tech) > 0:
                 safe_op = "".join(x for x in op_name if x.isalnum() or x in " _-").strip().replace(" ", "_")
                 safe_tech = tech_name.replace(" ", "_")
                 filename = f"signal_map_{safe_op}_{safe_tech}.csv"
-                path = os.path.join(EXPORT_DIR, filename)
-                df_op_tech.to_csv(path, index=False)
-                print(f"  ✅ Saved: {filename} ({len(df_op_tech)} pts)")
-            else:
-                print(f"  ⚠️ Skipped: {op_name} {tech_name} (Ghost Data/Dead Zone)")
+                df_op_tech.to_csv(os.path.join(EXPORT_DIR, filename), index=False)
+                print(f"  ✅ Saved: {filename}")
+
+        # 4. EXPORT COMBINED MAPS (ALL_COMBINED)
+        print(f"\n💾 EXPORTING COMBINED MAPS (Gap-Free) ...")
+        df_map_combined = spatial_averaging_combined(df_clean)
+        unique_ops = df_map_combined['operator'].unique()
         
+        for op_name in unique_ops:
+            df_op_all = df_map_combined[df_map_combined['operator'] == op_name]
+            safe_op = "".join(x for x in op_name if x.isalnum() or x in " _-").strip().replace(" ", "_")
+            filename = f"signal_map_{safe_op}_ALL_COMBINED.csv"
+            df_op_all.to_csv(os.path.join(EXPORT_DIR, filename), index=False)
+            print(f"  🌎 Saved: {filename} (Full Coverage)")
+
+        # 5. Summary
         print("\n" + "="*50)
         print("📉 DATA VOLUME & DISTANCE SUMMARY")
         print("="*50)
-        
-        count_clean = len(df_clean)
-        count_exported = len(df_map)
-        
-        print(f"1. Samples After Cleaning:      {count_clean:,}")
-        print(f"2. Exported Map Points:         {count_exported:,}")
-        print(f"3. Total Distance Travelled:    {total_km_travelled:.2f} km")
-        print(f"4. Total Unique Coverage Est:   ~{total_unique_km:.2f} km")
+        print(f"1. Samples After Cleaning:      {len(df_clean):,}")
+        print(f"2. Total Distance Travelled:    {total_km_travelled:.2f} km")
+        print(f"3. Total Unique Coverage Est:   ~{total_unique_km:.2f} km")
         print("="*50 + "\n")
 
     else:
