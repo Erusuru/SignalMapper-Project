@@ -25,15 +25,6 @@ This project was originally developed to map the network topology of **Blagoevgr
 
 ---
 
-## 🌍 Is this only for Bulgarian Carriers?
-**No.**
-While the screenshots and sample data show Bulgarian operators (A1, Yettel, Vivacom), the **SignalMapper App** and **Python Analyzers** are carrier-agnostic.
-*   **Universal Support:** Works with Turk Telekom, Vodafone, T-Mobile, Verizon, etc.
-*   **Dual-SIM Capable:** Logs data from both SIM slots simultaneously.
-*   **Roaming Support:** Detects visiting networks (e.g., Turk Telekom roaming in Bulgaria) and handles missing metrics (like null SNR) gracefully.
-
----
-
 ## 📂 Project Structure
 
 ### 1. The Android App (`/app`)
@@ -48,15 +39,32 @@ Python scripts to turn raw CSV logs into engineering insights.
 
 #### 🧠 `network_analyzer.py` (The Core Engine)
 Processes the CSV logs to generate a full network audit.
+*   **Smart Carrier Merging:** Automatically handles dynamic carrier name changes. Operators often change their SPN (Service Provider Name) for promotions (e.g., changing **"A1 BG"** to **"30YearsA1"**, or **"Yettel"** to **"Yettel 5G Power"**). The script intelligently groups these variations to prevent data fragmentation.
 *   **Stationary Filtering:** Automatically removes data points where the user is sitting still to prevent data skewing.
 *   **Spectrum Pollution Detection:** Identifies areas with strong signal (High RSRP) but unusable quality (Low SNR).
 *   **Handover Analysis:** Calculates how often the phone switches towers ("Ping-Pong effect").
 
 #### ⚔️ `device_comparison.py` (Hardware Benchmark)
-A tool to compare antenna sensitivity between two phones (e.g., **Samsung S25 Ultra vs. Galaxy A52s**). Matches GPS timestamps to calculate average dBm differences.
+A tool to compare antenna sensitivity between two phones. Matches GPS timestamps to calculate average dBm differences.
 
 #### 🗺️ `map_visualizer.py` & `geo_resolver.py`
 Tools for resolving Google Maps coordinates and automating high-res heatmap rendering.
+
+---
+
+## ⚠️ Hardware & SNR Limitations
+**Not all phones support SNR (Signal-to-Noise Ratio) reporting.**
+The ability to read SNR/SINR depends entirely on the specific **Modem, CPU, and Firmware** implementation of the device. Many manufacturers hide this metric in the low-level firmware, making it inaccessible to standard Android apps (unless the phone is Rooted to access the modem directly).
+
+**Tested Device Compatibility:**
+| Device Model | RSRP (Strength) | SNR (Quality) | Status |
+| :--- | :---: | :---: | :--- |
+| **Samsung Galaxy A52s** | ✅ Yes | ✅ Yes | **Fully Supported** |
+| **Samsung S25 Ultra** | ✅ Yes | ✅ Yes | **Fully Supported** |
+| **Samsung M51** | ✅ Yes | ❌ No | Partial (RSRP only) |
+| **Xiaomi 14** | ✅ Yes | ❌ No | Partial (RSRP only) |
+
+*If your device logs `0.0` or `N/A` for SNR, this is a firmware limitation, not a bug in the app.*
 
 ---
 
@@ -69,9 +77,8 @@ If you want to use the tool immediately without Android Studio:
 1.  Download **[SignalMapper_APK.zip](SignalMapper_APK.zip)** from the file list above.
 2.  Extract the ZIP file to get the `.apk`.
 3.  Transfer the file to your Android phone.
-4.  Tap to install.
-    *   *Note: You may need to allow **"Install from Unknown Sources"** in your phone settings since this is a research tool not on the Play Store.*
-5.  **Crucial:** On first launch, grant **Location (Always)** and **Phone State** permissions manually if prompted.
+4.  Tap to install. (Allow "Install from Unknown Sources" if prompted).
+5.  **Crucial:** On first launch, grant **Location (Always)** and **Phone State** permissions manually.
 
 #### Option 2: Build from Source (Developers)
 1.  Open the root folder in **Android Studio**.
@@ -96,7 +103,7 @@ If you want to use the tool immediately without Android Studio:
 *   **A1 BG:** "Performance King" - Highest peak speeds and aggressive tower switching (60 switches/min).
 *   **Yettel:** "Consistency King" - Fewest dead zones and balanced handover logic.
 *   **Vivacom:** "Conservative" - Sticky connections; holds onto distant towers too long, causing high spectrum pollution.
-*   **Hardware Insight:** The mid-range **Samsung A52s** (plastic back) often outperformed the flagship **S25 Ultra** (metal/glass) in raw signal reception by ~1.2 dBm.
+*   **Hardware Insight:** The mid-range **Samsung A52s** (plastic back) often outperformed the flagship **S25 Ultra** (metal/glass) in raw signal reception by ~1.2 dBm due to RF transparency.
 
 ---
 *Created for the South-West University "Neofit Rilski" Engineering Department.*
