@@ -49,6 +49,7 @@ def haversine_vectorized(lat1, lon1, lat2, lon2):
 def sanitize_metrics(df):
     if 'snr' in df.columns:
         df['snr'] = pd.to_numeric(df['snr'], errors='coerce')
+        # Fix for Integer.MAX_VALUE (2147483647) on unsupported phones
         df.loc[df['snr'] > 50, 'snr'] = np.nan 
         df.loc[df['snr'] < -50, 'snr'] = np.nan
         
@@ -379,7 +380,7 @@ def analyze_data(df):
     report_path = os.path.join(EXPORT_DIR, 'network_comparison_report.txt')
     with open(report_path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(report_buffer))
-    print(f"📄 Report saved to: {report_path}")
+    print(f"\n📄 Report saved to: {report_path}")
     
     return total_dist_stats.sum(), unique_counts.sum() * 0.011
 
