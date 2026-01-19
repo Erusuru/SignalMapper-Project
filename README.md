@@ -44,6 +44,8 @@ Located in `/analysis_scripts`.
 ## 🚀 How to Run
 
 ### Part A: The Android App
+Download the SignalMapper_APK.zip which contains the .apk file for the android application, or if you want to make a new build:
+
 1.  Open the root folder in **Android Studio**.
 2.  Build the APK and install it on a device.
 3.  Grant Location and Phone State permissions.
