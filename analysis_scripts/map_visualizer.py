@@ -2,12 +2,6 @@ import os
 import time
 from playwright.sync_api import sync_playwright
 
-# ===========================
-# ⚙️ CONFIGURATION
-# ===========================
-HTML_FILE = "A1.html" 
-OUTPUT_IMAGE = "Blagoevgrad_Ultra.png"
-
 # Window Size (Keep small for speed)
 NAV_WIDTH = 1200
 NAV_HEIGHT = 900
@@ -16,11 +10,15 @@ NAV_HEIGHT = 900
 PIXEL_RATIO = 3 
 
 def render():
-    if not os.path.exists(HTML_FILE):
-        print(f"❌ Error: {HTML_FILE} not found.")
+    print("--- Kepler.gl High-Res Screenshot Tool ---")
+    html_file = input("Enter the HTML map filename (e.g. map.html): ").strip().replace('"', '')
+    
+    if not os.path.exists(html_file):
+        print(f"❌ Error: {html_file} not found.")
         return
 
-    file_path = f"file://{os.path.abspath(HTML_FILE)}"
+    output_image = html_file.replace(".html", "_4k.png")
+    file_path = f"file://{os.path.abspath(html_file)}"
     
     print(f"🚀 Initializing Renderer...")
     
@@ -49,12 +47,12 @@ def render():
         # -------------------------------------------------
         print("\n" + "="*50)
         print("📍 PHASE 1: POSITIONING")
-        print("   1. Move to Blagoevgrad.")
-        print("   2. Set your angle.")
-        print("   3. DO NOT resize the window.")
+        print("   1. Move the map to your desired view.")
+        print("   2. Set your angle/tilt.")
+        print("   3. DO NOT resize the window manually.")
         print("="*50 + "\n")
         
-        input("👉 PRESS [ENTER] TO BOOST RESOLUTION...")
+        input("👉 PRESS [ENTER] WHEN READY TO BOOST RESOLUTION...")
         
         # -------------------------------------------------
         # PHASE 2: RETINA BOOST & LOAD
@@ -70,24 +68,22 @@ def render():
             "mobile": False
         })
         
-        print("⏳ Waiting 20 seconds for GPU to catch up...")
-        time.sleep(20)
+        print("⏳ Waiting 15 seconds for WebGL to re-render...")
+        time.sleep(15)
         
         # -------------------------------------------------
-        # PHASE 3: VISUAL CHECK (The Fix)
+        # PHASE 3: VISUAL CHECK
         # -------------------------------------------------
         print("\n" + "="*50)
         print("👀 PHASE 3: VISUAL CHECK")
         print("   Look at the browser window.")
         print("   - Are the streets sharp?")
         print("   - ARE THE COLORED DOTS VISIBLE?")
-        print("   If no dots: Wait longer. Don't press Enter yet.")
-        print("   If dots are there: Press Enter.")
         print("="*50 + "\n")
         
         input("👉 PRESS [ENTER] TO TAKE PHOTO NOW...")
 
-        # Hide UI
+        # Hide UI elements commonly found in Kepler.gl exports
         print("🧹 Cleaning UI...")
         page.add_style_tag(content="""
             .side-panel, .map-control, .bottom-widget, .mapboxgl-ctrl 
@@ -95,11 +91,11 @@ def render():
         """)
         
         # Capture
-        print("📸 Snapping Screenshot...")
-        page.screenshot(path=OUTPUT_IMAGE)
+        print(f"📸 Snapping Screenshot to {output_image}...")
+        page.screenshot(path=output_image)
         
         browser.close()
-        print(f"✅ DONE! Saved high-quality map to: {OUTPUT_IMAGE}")
+        print(f"✅ DONE! Saved.")
 
 if __name__ == "__main__":
     render()
