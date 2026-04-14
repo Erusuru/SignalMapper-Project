@@ -1,7 +1,9 @@
 📶 Cellular Signal Mapper & Analysis Suite
 by Ramazan Ertugrul Aydoğan
+
 ![alt text](https://img.shields.io/badge/Platform-Android_14+-green) ![alt text](https://img.shields.io/badge/UI-Jetpack_Compose-blueviolet)
 ![alt text](https://img.shields.io/badge/Analysis-Python-blue) ![alt text](https://img.shields.io/badge/License-MIT-green)
+
 A comprehensive toolkit for auditing cellular network coverage (4G/LTE/5G), benchmarking hardware performance, and generating high-fidelity signal heatmaps natively on-device or via Python data science tools.
 This project was originally developed to map the network topology of Blagoevgrad, Bulgaria, comparing three major national carriers. However, the software is universal and works with any carrier globally.
 ⚖️ Disclaimer: To maintain neutrality and avoid potential commercial conflicts, the specific names of the telecom operators analyzed in this study have been anonymized (referred to as Operator 01F, 03F, and 05F).
