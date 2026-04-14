@@ -32,7 +32,7 @@ The Android app has been entirely rewritten from the ground up:
 
 | Live Recording & Stats | Interactive Native Map |
 |:---:|:---:|
-| <img src="app_ui_1.jpeg" width="250" alt="App Status Screen"> | <img src="app_ui_2.jpeg" width="250" alt="In-App Map Screen"> |
+| <img src="app_ui_1.jpg" width="250" alt="App Status Screen"> | <img src="app_ui_2.jpg" width="250" alt="In-App Map Screen"> |
 | *Swipeable Dashboard & Live Stats* | *On-Device RSRP Heatmap Filtering* |
 
 ### 🗺️ Advanced Coverage Heatmap (Python)
