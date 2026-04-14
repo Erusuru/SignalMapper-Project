@@ -102,11 +102,9 @@ The ability to read SNR/SINR depends entirely on the specific **Modem, CPU, and 
 
 If you want to use the tool immediately without Android Studio:
 
-1.  Download **[SignalMapper_APK.zip](SignalMapper_APK.zip)** from the file list above.
-2.  Extract the ZIP file to get the `.apk`.
-3.  Transfer the file to your Android phone.
-4.  Tap to install. (Allow "Install from Unknown Sources" if prompted).
-5.  **Crucial:** On first launch, grant **Location (Always)** and **Phone State** permissions manually.
+1.  Download the latest SignalMapper.apk from releases page.
+2.  Tap to install. (Allow "Install from Unknown Sources" if prompted).
+3.  **Crucial:** On first launch, grant **Location (Always)** and **Phone State** permissions manually.
 
 #### Option 2: Build from Source (Developers)
 
