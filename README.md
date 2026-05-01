@@ -14,7 +14,7 @@ This project was originally developed to map the network topology of **Blagoevgr
 
 ---
 
-## ✨ What's New in the Latest Version (v1.22+)
+## ✨ What's New in the SignalMapper Version:C204
 
 The Android app has been entirely rewritten from the ground up:
 
