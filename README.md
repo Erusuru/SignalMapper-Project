@@ -40,31 +40,35 @@ The app has moved well past a drive-testing tool into a full personal network-hi
 
 ## 📸 Project Visuals
 
-### 📱 Core Recording & Map
+### 📱 Live Telemetry & Trip Navigation
 
-| Live Recording & Stats | Interactive Native Map |
+| Active Recording (Dark Mode) | Trip Companion Setup (Light Mode) | Onboarding Flow |
+|:---:|:---:|:---:|
+| <img src="app_ui_recording_active.jpg" width="230" alt="Active Recording Dashboard"> | <img src="app_ui_trip_setup.jpg" width="230" alt="Trip Companion Setup"> | <img src="app_ui_onboarding.jpg" width="230" alt="Onboarding Step 1"> |
+| *Live dual-SIM logging & active trip ETA* | *Destination input, alert timers & toggles* | *First-launch setup & persistent profile* |
+
+### 🗺️ Native Map Engine & Overlays
+
+| Satellite Heatmap & Fog of War | City Map (Explored Mode) | Map Generator & Road Comparison |
+|:---:|:---:|:---:|
+| <img src="app_ui_map_satellite.jpg" width="230" alt="Satellite Tile Mode"> | <img src="app_ui_map_explored.jpg" width="230" alt="City Tile Explored Mode"> | <img src="app_ui_map_settings.jpg" width="230" alt="Map Generator Settings"> |
+| *Esri Satellite tiles, signal dots & operator filters* | *OSM City tiles, explored points & grid reveal* | *City radius filters & ~100m session comparison* |
+
+### 📊 Analytics, Charts & Achievements
+
+| Telemetry Summary Dashboard | Achievements & Badges (24/27) | Daily Distance & Signal Quality |
+|:---:|:---:|:---:|
+| <img src="app_ui_stats_summary.jpg" width="230" alt="Detailed Telemetry Stats"> | <img src="app_ui_badges.jpg" width="230" alt="Badges Matrix"> | <img src="app_ui_charts.jpg" width="230" alt="Daily Charts & Distribution"> |
+| *Global metrics, city coverage & lifetime telemetry* | *Full-history milestone & condition badges* | *RSRP quality distribution & 7-day distance bar chart* |
+
+### 🌐 World Leaderboards & Territory Game
+
+| Multi-Tier World Leaderboards | Zone Capture Territory Game |
 |:---:|:---:|
-| <img src="app_ui_1.jpg" width="250" alt="App Status Screen"> | <img src="app_ui_2.jpg" width="250" alt="In-App Map Screen"> |
-| *Swipeable Dashboard & Live Stats* | *On-Device RSRP Heatmap Filtering* |
+| <img src="app_ui_leaderboard.jpg" width="250" alt="World Leaderboard"> | <img src="app_ui_territory.jpg" width="250" alt="Territory Capture Map"> |
+| *Distance (All-Time/Month/Week/Day), data & tower rankings* | *Multiplayer grid territory capture (Walking vs Open leagues)* |
 
-### 🆕 New in ATOMS2026
-
-| Onboarding & Identity | Trip Companion |
-|:---:|:---:|
-| <img src="app_ui_3.jpg" width="250" alt="Onboarding Flow"> | <img src="app_ui_4.jpg" width="250" alt="Trip Companion"> |
-| *First-launch setup & persistent profile* | *Live ETA, alerts & auto-recording* |
-
-| Fog of War / Tile Modes | Graphs, Stats & Achievements |
-|:---:|:---:|
-| <img src="app_ui_5.jpg" width="250" alt="Fog of War Map Mode"> | <img src="app_ui_6.jpg" width="250" alt="Achievements Screen"> |
-| *Explored-cell reveal, City/Road/Satellite tiles* | *Badges, road comparisons, signal distributions* |
-
-| Online & Leaderboard | Territory Game |
-|:---:|:---:|
-| <img src="app_ui_7.jpg" width="250" alt="Online Tab"> | <img src="app_ui_8.jpg" width="250" alt="Territory Game Map"> |
-| *Who's online now, global stats* | *Capture cells through exploration* |
-
-### 🗺️ Advanced Coverage Heatmap (Python)
+### 🗺️ Advanced Coverage Heatmap (Python Engine)
 
 <img src="heatmap_preview.png" width="100%" alt="Coverage Heatmap">
 
