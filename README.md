@@ -58,7 +58,7 @@ The app has moved well past a drive-testing tool into a full personal network-hi
 
 | Analytics Dashboard (Dark Mode) | Analytics Dashboard (Light Mode) | Achievements & Badges (24/27) |
 |:---:|:---:|:---:|
-| <img src="app_ui_stats_dark.jpeg" width="230" alt="Dark Theme Stats"> | <img src="app_ui_stats_light.jpeg" width="230" alt="Light Theme Stats"> | <img src="app_ui_badges.jpeg" width="230" alt="Badges Matrix"> |
+| <img src="app_ui_stats_summary.jpeg" width="230" alt="Dark Theme Stats"> | <img src="app_ui_stats_light.jpeg" width="230" alt="Light Theme Stats"> | <img src="app_ui_badges.jpeg" width="230" alt="Badges Matrix"> |
 | *Full dark theme telemetry dashboard* | *Clean light theme dashboard toggle* | *Full-history milestone & condition badges* |
 
 ### 🌐 World Leaderboards & Territory Game
