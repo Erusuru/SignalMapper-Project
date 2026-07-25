@@ -90,9 +90,9 @@ A native Kotlin application designed for professional "Drive Testing" without ex
 *   **Persistent Identity:** A `profile.json` outside app-private storage keeps your username, badges, and settings intact across reinstalls.
 *   **Android 14 Ready:** Full support for `FOREGROUND_SERVICE_LOCATION`, `POST_NOTIFICATIONS`, and modern `FileProvider` sharing.
 
-### 2. The Server (`/server`)
+### 2. The Companion Server
 
-A lightweight Python/Flask backend (self-hosted, e.g. on a Raspberry Pi) that receives uploads, tracks online status, runs the leaderboard and territory game, and serves update checks — none of this is required to use the app's on-device features, but it powers the community/sync layer.
+The app can optionally sync to a lightweight Python/Flask backend (self-hosted, e.g. on a Raspberry Pi) that handles uploads, online status, the leaderboard, and the territory game. This is a private, personally-hosted service and its source isn't part of this repository — none of it is required to use the app's on-device recording, mapping, and stats features.
 
 ### 3. The Analysis Suite (`/analysis_scripts`)
 
@@ -152,13 +152,9 @@ If you want to use the tool immediately without Android Studio:
 1.  Open the root folder in **Android Studio** (Koala or newer recommended for Jetpack Compose).
 2.  Sync Gradle and run the app on a connected device running Android 8.0+.
 
-### Part B: The Server (Optional — for sync/leaderboard/territory)
+> The app talks to a companion sync server for the leaderboard, online status, and territory game — this is privately hosted and its source isn't included in this repo. All on-device features (recording, mapping, stats, achievements) work fully without it.
 
-1.  Requires Python 3 + Flask on any always-on machine (a Raspberry Pi works well).
-2.  Set your `SIGNAL_API_TOKEN` as an environment variable rather than relying on the source default.
-3.  Run `python server.py` — it listens on port 5055 by default.
-
-### Part C: The Analysis (Python)
+### Part B: The Analysis (Python)
 
 1.  Install the required Python libraries:
 
