@@ -35,6 +35,14 @@ The app has moved well past a drive-testing tool into a full personal network-hi
 *   **Online & Territory:** See who else is currently recording, check a live leaderboard, and play an anonymous territory-capture game against other users based on exploration density.
 *   **Resilient Sync:** Uploads are now zipped with device/battery metadata, retried instantly on Wi-Fi reconnect, and protected against race conditions — no more silently-lost sessions.
 *   **Home-Screen Widget:** Start/stop recording without opening the app.
+*   **Android Auto Support:** Live signal gauges, dead-zone warnings, and trip ETAs projected directly onto the car dashboard.
+*   **Virtual Army (Mode 2):** A strategy game layer on top of the territory map — recruit troops, build Factories/Hospitals, establish trade routes, and conquer tiles.
+*   **Trip Scorecards & Daily Summaries:** A+ to F session grading based on dead-zone time, 5G ratio, and signal stability.
+*   **Carrier Matrix & 5G Band Analysis:** Head-to-head operator comparison, plus True High-Speed Sub-6 GHz vs. Low-Band/DSS 5G detection.
+*   **OpenCellID Integration:** Display real, surveyed physical cell towers alongside your own estimated ones.
+*   **Speed & Ping Tester:** Automated Cloudflare CDN speed/latency checks every 10 minutes.
+*   **Live Territory War Alerts:** In-app heads-up notifications when rivals capture your territory.
+*   **Permanent Carrier Combining:** Merge rebranded or roaming carrier names (e.g. "30YEARSA1") into a single canonical operator (e.g. "A1").
 
 ---
 
@@ -88,11 +96,24 @@ A native Kotlin application designed for professional "Drive Testing" without ex
 *   **Trip Companion:** Geocoded destinations, Haversine-based ETA, proximity alerts, and automatic offline tile pre-caching for the route ahead.
 *   **Local Database Indexing:** Every CSV log is indexed into a local Room database in the background, so map generation and stats no longer re-parse raw files every time.
 *   **Persistent Identity:** A `profile.json` outside app-private storage keeps your username, badges, and settings intact across reinstalls.
-*   **Android 14 Ready:** Full support for `FOREGROUND_SERVICE_LOCATION`, `POST_NOTIFICATIONS`, and modern `FileProvider` sharing.
+*   **Android 14 Ready:** Full support for `FOREGROUND_SERVICE_LOCATION`, `POST_NOTIFICATIONS`, and modern `FileProvider` sharing, using Scoped Storage (Storage Access Framework) via `Documents/SignalMapper`.
+*   **Android Auto:** Live signal gauges, dead-zone warnings, and trip ETAs surfaced on the car head unit.
+*   **OpenCellID Integration:** Overlays real, surveyed physical cell towers alongside the app's own triangulated estimates.
+*   **Speed & Ping Testing:** Scheduled Cloudflare CDN speed/latency checks run automatically every 10 minutes to correlate throughput with signal quality.
 
 ### 2. The Companion Server
 
 The app can optionally sync to a lightweight Python/Flask backend (self-hosted, e.g. on a Raspberry Pi) that handles uploads, online status, the leaderboard, and the territory game. This is a private, personally-hosted service and its source isn't part of this repository — none of it is required to use the app's on-device recording, mapping, and stats features.
+
+The ATOMS2026 backend adds several endpoints and systems that power the app's new online layers:
+
+*   **`/sync_virtual_army`:** Handles Virtual Army snapshot merging, combat resolution, bot generation, and unit/resource gifting between players.
+*   **`/virtual_army_backfill`:** Retroactively converts a user's past recording history into claimed Virtual Army territory.
+*   **`/territory_alerts`:** Pushes real-time notifications when a rival player captures one of your territory tiles.
+*   **Multi-Tier Leaderboards:** All-Time, Monthly, Weekly, and Daily distance rankings, alongside data and tower-count leaderboards.
+*   **`/upload`:** Now returns a `newly_captured_cells` payload, converting freshly explored physical territory directly into Virtual Army strategy-game resources.
+
+---
 
 ### 3. The Analysis Suite (`/analysis_scripts`)
 
@@ -140,19 +161,10 @@ The ability to read SNR/SINR depends entirely on the specific **Modem, CPU, and 
 
 #### Option 1: Quick Install (No Coding Required)
 
-If you want to use the tool immediately without Android Studio:
-
 1.  Download the latest SignalMapper.apk from the releases page.
 2.  Tap to install. (Allow "Install from Unknown Sources" if prompted).
 3.  On first launch, complete the short onboarding flow — this sets your display name and preferences and creates your persistent profile.
-4.  **Crucial:** Grant **Location (Always)**, **Phone State**, and **Notifications** permissions when prompted, plus **All Files Access** if you're on Android 11+.
-
-#### Option 2: Build from Source (Developers)
-
-1.  Open the root folder in **Android Studio** (Koala or newer recommended for Jetpack Compose).
-2.  Sync Gradle and run the app on a connected device running Android 8.0+.
-
-> The app talks to a companion sync server for the leaderboard, online status, and territory game — this is privately hosted and its source isn't included in this repo. All on-device features (recording, mapping, stats, achievements) work fully without it.
+4.  **Crucial:** Grant **Location (Always)**, **Phone State**, and **Notifications** permissions when prompted, plus Documents folder access via the system picker when prompted (Scoped Storage).
 
 ### Part B: The Analysis (Python)
 
